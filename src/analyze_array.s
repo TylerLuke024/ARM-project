@@ -3,6 +3,7 @@
 .global analyze_array
 .type analyze_array, %function
 
+
 analyze_array:
 
     // saving the registers and the return addresses
@@ -61,7 +62,8 @@ loop:
     b.gt positive
     b.lt negative
 
-    // Zero count
+    // if it wasnt "1" or "-1" then move onto this step where we initialize
+    // and increment the 0 counter
     ldr x9, [x21, #40] // initializing
     add x9, x9, #1
     str x9, [x21, #40]
@@ -71,7 +73,7 @@ positive:
     // Positive count
     ldr x9, [x21, #24]
     add x9, x9, #1
-    str x9, [x21, #24]
+    str x9, [x21, #24] // stores the value in x9 into memory at the address held in x21 plus 24 bytes.
     b update_extrema
 
 negative:
@@ -79,11 +81,12 @@ negative:
     ldr x9, [x21, #32]
     add x9, x9, #1
     str x9, [x21, #32]
+    b update_extrema
 
 update_extrema:
     // Update minimum and maximum using helper
-    mov x0, x23
-    mov x1, x21
+    mov x0, x23 // update_min_max expects the current array element to be checked in x0.
+    mov x1, x21 // update_min_max expects the current array value to be in address in x1.
     bl update_min_max
 
     // Move to next element
@@ -91,7 +94,8 @@ update_extrema:
     b loop
 
 done:
-    // Restore saved registers and return
+    // Restore saved registers because if another program uses them then whatever
+    // was in the registers needs to be saved
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
