@@ -2,8 +2,23 @@
 .text
 .global classify_value
 .type classify_value, %function
+
 classify_value:
-    // TODO: replace this branch with your implementation.
-    b not_implemented
+    cmp x0, #0
+    b.lt negative
+    b.gt positive
+
+zero:
+    mov x0, #0
+    ret
+
+negative:
+    mov x0, #-1
+    ret
+
+positive:
+    mov x0, #1
+    ret
+
 .size classify_value, .-classify_value
 .section .note.GNU-stack,"",@progbits
